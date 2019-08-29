@@ -9,9 +9,9 @@ web request to http://api.postcodes.io/.
 The first test uses a rest-template, the second test activates the Camel route through the main 
 function 'MySpringBootRouter.java'.
 
-In the main function 'MySpringBootApplication.java' you will find two options on how to activate the route.
-Option 1 works perfectly fine for JUnit Testing. 
-Option 2 (now uncommented code) does not allow JUnit Testing. 
+### In the main function 'MySpringBootApplication.java' you will find two options on how to activate the route.
+- Option 1 works perfectly fine for JUnit Testing. 
+- Option 2 (now uncommented code) does not allow JUnit Testing. 
 
 
 # How to run from command line:
