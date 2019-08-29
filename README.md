@@ -11,8 +11,8 @@ function 'MySpringBootRouter.java'.
 
 # Problem: 
 In the main function 'MySpringBootApplication.java' you will find two options on how to activate the route.
-- Option 1 works perfectly fine for both tests, the Camel Route JUnit Testing and rest template. 
-- Option 2 does not work for JUnit Testing of the Camel Route.
+- Option 1 works perfectly fine for both tests (the Camel Route JUnit Test and rest template JUnit Test) 
+- Option 2 does not work for JUnit Test of the Camel Route.
 
 
 # How to run from command line:
