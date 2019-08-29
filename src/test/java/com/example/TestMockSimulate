@@ -1,0 +1,86 @@
+package com.example;
+
+import io.specto.hoverfly.junit.rule.HoverflyRule;
+import org.apache.camel.RoutesBuilder;
+import org.junit.ClassRule;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.reactive.server.JsonPathAssertions;
+
+import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
+import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
+import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
+
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
+import org.springframework.web.client.RestTemplate;
+import org.apache.camel.component.http4.HttpMethods;
+
+import static org.junit.Assert.*;
+
+/**
+ * As long as the build of this code is not in a staging environment of JenkinX (meaning the build is in a
+ * preview environment), JenkinX does not
+ * 1. connect to webservices and
+ * 2. unit-tests in the preview environment will never be executed.
+ *
+ * Therefore, we will mock the webservices response using Hoverfly Java.
+ * A mock simulates a request and returns always the same response to the camel pipeline.
+ *
+ * This class simulates a POST request to the webservice 'spellchecker'.
+ *
+ * More details on Hoverfly can be found here:
+ * https://hoverfly.readthedocs.io/projects/hoverfly-java/en/latest/
+ * https://dzone.com/articles/testing-rest-apis-with-hoverfly
+ */
+
+class TestMockSpellchecker {
+
+    //mocking the service
+    @ClassRule
+    public static HoverflyRule hoverflyRule = HoverflyRule.inSimulationMode(
+            dsl(service("api.postcodes.io") //adress service
+                    .get("postcodes/SK142DR")
+                    //.get("/random/postcodes") //request to adress
+                    .willReturn(success("{\"postcode\":\"SK142DR\"}", "application/json")) // mocked response
+    ));
+
+
+//    protected RoutesBuilder createRouteBuilder() throws Exception {
+//        return new MySpringBootRouter();
+//    }
+
+    // The restTemplate makes a request. Later, the routebuilder should be used instead (to test the route).
+    @Autowired
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Test
+    public void testGetPostcodeUsingHomely() {
+        // When
+        final ResponseEntity<String> getPostcode = restTemplate.
+                getForEntity("http://api.postcodes.io/postcodes/SK142DR", String.class);
+
+               // getForEntity("http://api.postcodes.io/random/postcodes", String.class);
+
+        // Then
+         //assertThat(getPostcode.getStatusCode()).isEqualTo(200);
+
+//        assertThatJson(getPostcode.getBody()).isEqualTo("{\"postcode\":\"SE167TD\"}");
+        //assertThatJson(getPostcode.getBody()).isEqualTo("{\"postcode\":\"SK142DR\"}");
+        assertThatJson(getPostcode.getBody()).isEqualTo(
+        "{\"status\":200,\"result\":{\"postcode\":\"SK14 2DR\",\"quality\":1,\"eastings\":394147," +
+                "\"northings\":395098,\"country\":\"England\",\"nhs_ha\":\"North West\"," +
+                "\"longitude\":-2.089603,\"latitude\":53.452623,\"european_electoral_region\":\"North West\"," +
+                "\"primary_care_trust\":\"Tameside and Glossop\",\"region\":\"North West\"," +
+                "\"lsoa\":\"Tameside 028E\",\"msoa\":\"Tameside 028\",\"incode\":\"2DR\",\"outcode\":\"SK14\"," +
+                "\"parliamentary_constituency\":\"Stalybridge and Hyde\",\"admin_district\":\"Tameside\"," +
+                "\"parish\":\"Tameside, unparished area\",\"admin_county\":null,\"admin_ward\":\"Hyde Godley\"," +
+                "\"ced\":null,\"ccg\":\"NHS Tameside and Glossop\",\"nuts\":\"Greater Manchester South East\"," +
+                "\"codes\":{\"admin_district\":\"E08000008\",\"admin_county\":\"E99999999\",\"admin_ward\":\"E05000811\"," +
+                "\"parish\":\"E43000162\",\"parliamentary_constituency\":\"E14000967\",\"ccg\":\"E38000182\"," +
+                "\"ced\":\"E99999999\",\"nuts\":\"UKD35\"}}}");
+    }
+}
