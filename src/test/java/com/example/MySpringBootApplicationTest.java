@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.ClassRule;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
  * Option 1 works perfectly fine for JUnit Testing
  */
 
+@SpringBootTest
 public class MySpringBootApplicationTest {
 
     public MySpringBootApplicationTest() {
@@ -94,8 +96,6 @@ public class MySpringBootApplicationTest {
     @Test
     public void testCamelRoutes() throws IOException, InterruptedException {
         System.out.println("testCamelRoutes");
-        String[] args = null;
-        MySpringBootApplication.main(args);
 
         String result = new String(Files.readAllBytes(Paths.get("./src/data/output/postcodes.json")), StandardCharsets.UTF_8);
 
